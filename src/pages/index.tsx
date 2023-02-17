@@ -1,11 +1,17 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
-import { useStore, getEmail, setEmail } from "@/stores";
+// React
 import { useEffect } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+// Next
+import Head from "next/head";
+
+// Zustand
+import { useStore, getEmail, setEmail } from "@/stores/userStore";
+
+// Components
+import LoginPage from "@/components/website/account/login/Login";
+
+// Styles
+import styles from "@/styles/Home.module.css";
 
 export default function Home() {
   const setGlobalEmail = useStore(setEmail);
@@ -27,9 +33,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div></div>
-      </main>
+
+      <LoginPage />
     </>
   );
 }
