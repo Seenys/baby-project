@@ -1,8 +1,9 @@
 import React from "react";
 import { FirebaseAddTodo } from "../../../types/firebase";
+import UserDashboard from "@/components/dashboard/UserDashboard";
 
 const ListGiftTemplate = () => {
-  return <div>ListGiftTemplate in</div>;
+  return <UserDashboard />;
 };
 
 export default ListGiftTemplate;

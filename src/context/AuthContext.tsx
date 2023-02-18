@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { auth } from "@/firebase";
@@ -21,18 +22,13 @@ export const AuthContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [user, setUser] = useState<UserType>({ email: null, uid: null });
+  const [user, setUser] = useState<UserType>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser({
-          email: user.email,
-          uid: user.uid,
-        });
-      } else {
-        setUser({ email: null, uid: null });
+        setUser(user);
       }
     });
     setLoading(false);
@@ -49,7 +45,6 @@ export const AuthContextProvider = ({
   };
 
   const logOut = async () => {
-    setUser({ email: null, uid: null });
     await signOut(auth);
   };
 

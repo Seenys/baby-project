@@ -1,5 +1,6 @@
 // React
 import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 // Next
 import Head from "next/head";
@@ -9,6 +10,7 @@ import { useStore, getEmail, setEmail } from "@/stores/userStore";
 
 // Components
 import LoginPage from "@/components/website/account/login/Login";
+import ListGifts from "./listGifts/index";
 
 // Styles
 import styles from "@/styles/Home.module.css";
@@ -16,15 +18,15 @@ import styles from "@/styles/Home.module.css";
 export default function Home() {
   const setGlobalEmail = useStore(setEmail);
   const getGlobalEmail = useStore(getEmail);
-  console.log(
-    "🚀 ~ file: index.tsx:13 ~ Home ~ getGlobalEmail",
-    getGlobalEmail
-  );
+
+  const { user } = useAuth();
+
+  console.log("🚀 ~ file: index.tsx:13 ~ Home ~ getGlobalEmail", user);
 
   useEffect(() => {
     setGlobalEmail("test@gmail.com");
   }, []);
-
+  console.log("user", !user);
   return (
     <>
       <Head>
@@ -34,7 +36,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <LoginPage />
+      {!user && <LoginPage />}
+      {user && <ListGifts />}
     </>
   );
 }

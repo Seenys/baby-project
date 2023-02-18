@@ -6,7 +6,6 @@ import { FC, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 // React Hook
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
 import { useAuth } from "@/context/AuthContext";
 
 // Interfaces
@@ -20,7 +19,6 @@ const LoginPage: FC = () => {
   const [isLoginIn, setIsLoginIn] = useState<boolean>(true);
 
   const { signUp, logIn } = useAuth();
-  const router = useRouter();
 
   const {
     register,
@@ -29,21 +27,15 @@ const LoginPage: FC = () => {
   } = useForm<submitData>();
 
   const onSubmit = handleSubmit(({ email, password }) => {
-    if (!isLoginIn) {
+    if (isLoginIn) {
       try {
-        signUp(email, password);
-        router.push("/listGifts");
-      } catch (err) {
+        logIn(email, password);
+      } catch (error) {
         console.log("Incorrect email or password");
       }
       return;
     }
-    try {
-      logIn(email, password);
-      router.push("/listGifts");
-    } catch (err) {
-      console.log("Incorrect email or password");
-    }
+    signUp(email, password);
   });
 
   const handleGoogleLogin = async () => {
