@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import { useAuth } from "@/context/AuthContext";
 
 // Styles & Icons
-import { CgCloseO } from "react-icons/Cg";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 //interface
 interface ModalProps {
@@ -31,7 +31,7 @@ const Modal: FC<ModalProps> = ({ setOpenModal }) => {
           Modal
         </h1>
         <button type="button">
-          <CgCloseO
+          <AiFillCloseCircle
             onClick={() => setOpenModal(false)}
             className="text-3xl duration-300 cursor-pointer hover:rotate-90 sm:text-3xl"
           />
