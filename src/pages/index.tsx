@@ -26,7 +26,6 @@ export default function Home() {
   useEffect(() => {
     setGlobalEmail("test@gmail.com");
   }, []);
-  console.log("user", !user);
   return (
     <>
       <Head>

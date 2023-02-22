@@ -31,7 +31,7 @@ const toggleTodoStatus = async ({ docId, status }: FirebaseToggleTodoStatus) => 
   }
 };
 
-const deleteTodo = async (docId :string) => {
+const deleteGift = async (docId :string) => {
   try {
     const todoRef = doc(db, "todo", docId);
     await deleteDoc(todoRef);
@@ -39,4 +39,4 @@ const deleteTodo = async (docId :string) => {
     console.log(err);
   }
 };
-export { addTodo, toggleTodoStatus, deleteTodo };
+export { addTodo, toggleTodoStatus, deleteGift };
