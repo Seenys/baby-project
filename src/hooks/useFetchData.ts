@@ -7,10 +7,13 @@ import { db } from '@/firebase';
 import { useAuth } from '@/context/AuthContext';
 //Types
 import { Gifts } from '../types/firebase';
+import { formatConfirmedGift } from '@/utils/formatData';
 
 
 const useFetchData = (uid?: string | string[]) => {
     const [dbGift, setDbGift] = useState<Gifts>({});
+    const [dbConfirmed, setDbConfirmed] = useState<any>({});
+    const [dbDiapers, setDbDiapers] = useState<any>({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<null | String>(null);
 
@@ -23,7 +26,10 @@ const useFetchData = (uid?: string | string[]) => {
                 setLoading(true);
                 const docRef = doc(db, "Users", userId);
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) setDbGift(docSnap.data().GiftList);      
+                if (!docSnap.exists()) return;
+                setDbGift(docSnap.data().GiftList);
+                setDbConfirmed(docSnap.data().selectedGifts);
+                setDbDiapers(docSnap.data().diapers);       
             }catch(err){
                 setError('Error fetching data');
             }finally{
@@ -34,6 +40,8 @@ const useFetchData = (uid?: string | string[]) => {
     },[])
 
     return {
+        dbDiapers,
+        dbConfirmed,
         dbGift,
         loading,
         error,

@@ -150,13 +150,19 @@ const UserDashboard = () => {
   return (
     <div className="w-full max-w-[65ch] mx-auto ">
       <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-5">
+        <h1>Url to gift selection</h1>
+        <span className="text-red-500">
+          <pre>
+            Url:<Link href={`listGifts/${user.uid}`}>/{user.uid}</Link>
+          </pre>
+        </span>
         <>
           <label>Add new Gift:</label>
           <div className="flex items-stretch">
             <input
               {...register("gift")}
               value={gift.gift}
-              placeholder="Please enter your todo"
+              placeholder="Please enter your gift here!!"
               required
               className="outline-none p-2 text-base sm:text-lg text-slate-900 flex-1"
               onChange={(e) => setGift({ ...gift, gift: e.target.value })}
@@ -209,10 +215,6 @@ const UserDashboard = () => {
             ADD TODO
           </button>
         )} */}
-        <h1>Url to gift selection</h1>
-        <span className="text-red-500">
-          Url:<Link href={`listGifts/${user.uid}`}>/{user.uid}</Link>
-        </span>
       </form>
     </div>
   );

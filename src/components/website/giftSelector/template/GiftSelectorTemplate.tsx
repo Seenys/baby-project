@@ -3,35 +3,49 @@ import React, { FC, useEffect, useState } from "react";
 // Hooks
 import { useForm } from "react-hook-form";
 import useFetchData from "@/hooks/useFetchData";
+import { useGiftStore, setIsSelected } from "@/stores/giftStore";
 // Types
 import { Gift, Gifts } from "@/types/firebase";
 // Icons
 import { BsBookmarkCheck } from "react-icons/bs";
 import { FcCheckmark } from "react-icons/fc";
-import Swal from "sweetalert2";
+import { HiClipboardCheck } from "react-icons/hi";
+// functions
+import { collection, doc, setDoc } from "firebase/firestore";
 import { Toast } from "@/alerts/toast";
-import InfiniteScroll from "react-infinite-scroller";
+import { db } from "@/firebase";
+//others
+import Swal from "sweetalert2";
+import uniqid from "uniqid";
 
 interface Props {
-  uid: string | string[];
+  uid: any;
 }
 
 interface FormInvite {
   Name: string;
   Gift: Gifts;
 }
-const initialState: Gift = {
-  gift: "",
-  selected: false,
-  quantity: 0,
-  id: "",
-};
+
+interface Diapers {
+  name: string;
+  quantity: number;
+  id?: string | any;
+}
+
+interface dbDiapers {
+  [key: string]: Diapers;
+}
 
 const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
-  const { dbGift, loading, error } = useFetchData(uid);
+  const { dbDiapers, dbGift, loading, error } = useFetchData(uid);
   const [giftArray, setGiftArray] = useState<Gifts>({});
-  const [newObject, setNewObject] = useState<Gifts>({});
-
+  const [hasDiapers, setHasDiapers] = useState<Diapers>({
+    name: "",
+    quantity: 0,
+    id: "",
+  });
+  const isSelected = useGiftStore(setIsSelected);
   const {
     register,
     setValue,
@@ -44,7 +58,12 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
     setGiftArray(dbGift);
   }, [dbGift]);
 
-  const handleSelect = (id: string) => {
+  useEffect(() => {
+    if (!dbDiapers) return;
+    diapersManager(dbDiapers);
+  }, [dbDiapers]);
+
+  const handleSelect = async (id: string) => {
     const gift = giftArray[id];
     const { selected } = gift;
     setGiftArray({
@@ -60,73 +79,116 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
     });
   };
 
-  const handleFetch = async () => dbGift;
-
   const onSubmit = handleSubmit(({ Name }) => {
-    let selectedGifts = {};
+    let selectedGiftsQuantity = {};
+    let confirmedObject: string[] = [];
 
     Object.keys(giftArray).map((item) => {
-      const { id, selected } = giftArray[item];
+      const { id, selected, quantity, gift } = giftArray[item];
       if (!selected) return;
-      selectedGifts = {
-        ...selectedGifts,
+      confirmedObject = [...confirmedObject, gift];
+
+      selectedGiftsQuantity = {
+        ...selectedGiftsQuantity,
         [id]: {
           ...giftArray[item],
+          selected: false,
+          quantity: quantity - 1,
         },
       };
     });
 
     const inviteObject = {
+      id: uniqid(),
       Name,
-      Gift: { ...selectedGifts },
+      Gift: confirmedObject,
     };
     const { Gift } = inviteObject;
-    if (Object.values(Gift).length === 0 || Name === "") return;
+    if (Gift.length === 0 || Name === "") return;
 
-    console.log(inviteObject);
+    firebaseAdd(inviteObject, selectedGiftsQuantity);
   });
+
+  const firebaseAdd = async (selectedData: any, quantityData: any) => {
+    const docRef = collection(db, "Users");
+    await setDoc(
+      doc(docRef, uid),
+      {
+        GiftList: {
+          ...quantityData,
+        },
+        diapers: {
+          ...dbDiapers,
+          [hasDiapers.id]: {
+            ...hasDiapers,
+            quantity: hasDiapers.quantity - 1,
+          },
+        },
+        selectedGifts: {
+          [selectedData.id]: {
+            ...selectedData,
+          },
+        },
+      },
+      { merge: true }
+    );
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: `Your gifts have been added.`,
+    });
+    isSelected(true);
+  };
+
+  const diapersManager = (data: dbDiapers) => {
+    if (Object.keys(data).length === 0) return;
+    const {
+      etapa_1: { name: eta1Name, quantity: eta1Qua },
+      etapa_2: { name: eta2Name, quantity: eta2Qua },
+      etapa_3: { name: eta3Name, quantity: eta3Qua },
+    } = data;
+    const diapersArray = [
+      { name: eta1Name, quantity: eta1Qua, id: "etapa_1" },
+      { name: eta2Name, quantity: eta2Qua, id: "etapa_2" },
+      { name: eta3Name, quantity: eta3Qua, id: "etapa_3" },
+    ];
+    const diapers = diapersArray.find((diaper) => diaper.quantity > 0);
+    if (!diapers) return;
+    setHasDiapers(diapers);
+  };
 
   return (
     <>
       <div className="flex-1 flex flex-col h-screen  items-center text-xs sm:text-sm">
-        <h1>GiftSelectorTemplate</h1>
         <div className="flex lg:flex-row items-center flex-col-reverse w-full h-full">
-          <div className="lg:w-3/5 w-auto h-fit items-center">
-            {!loading && (
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={handleFetch}
-                loader={
-                  <div className="loader" key={0}>
-                    Loading ...
-                  </div>
-                }
-                useWindow={false}
-                className="grid gap-x-8 gap-y-4 lg:grid-cols-3 grid-cols-2 m-4"
-              >
-                {Object.keys(giftArray).map((gift) => {
-                  const { id, gift: giftName, selected } = giftArray[gift];
-                  return (
-                    <div
-                      key={gift}
-                      onClick={() => handleSelect(gift)}
-                      className={`w-full cursor-pointer outline-none border border-solid rounded-lg  justify-center items-center duration-300 hover:bg-slate-700 ${
-                        selected ? "border-green-400" : "border-blue1"
-                      }`}
-                    >
-                      <div className="flex flex-shrink p-4 h-full w-full justify-center items-center">
-                        <h1 className="flex-1">{giftName}</h1>
-                        {selected && (
-                          <BsBookmarkCheck className="text-2xl text-green-400" />
-                        )}
-                      </div>
+          <div className="lg:w-3/5 grid grid-cols-3 gap gap-4 w-auto h-fit items-center">
+            {!loading &&
+              Object.keys(giftArray).map((gift) => {
+                const {
+                  id,
+                  gift: giftName,
+                  selected,
+                  quantity,
+                } = giftArray[gift];
+                return quantity > 0 ? (
+                  <div
+                    key={gift}
+                    onClick={() => handleSelect(gift)}
+                    className={`w-full cursor-pointer outline-none border border-solid rounded-lg  justify-center items-center duration-300 hover:bg-slate-700 ${
+                      selected ? "border-green-400" : "border-blue1"
+                    }`}
+                  >
+                    <div className="flex flex-shrink p-4 h-full w-full justify-center items-center">
+                      <h1 className="flex-1">{giftName}</h1>
+                      {selected && (
+                        <BsBookmarkCheck className="text-2xl text-green-400" />
+                      )}
                     </div>
-                  );
-                })}
-              </InfiniteScroll>
-            )}
+                  </div>
+                ) : null;
+              })}
           </div>
-          <div className="lg:w-2/5 w-auto outline-none border border-solid border-blue1 m-4 p-4">
+          <div className="lg:w-2/5 w-auto outline-none border border-solid border-blue1 m-4 p-4 sticky top-1/4 self-start">
             <h1 className="text-2xl">Gifts</h1>
             <div className="flex flex-col  sm:gap-5">
               {Object.keys(giftArray).map((item) => {
@@ -144,8 +206,23 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                 );
               })}
             </div>
-
-            <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-5">
+            <h1 className="text-2xl">Diapers</h1>
+            <div className="flex flex-col  sm:gap-5">
+              {hasDiapers && (
+                <div className="flex justify-center gap gap-2 items-center m-2">
+                  <HiClipboardCheck className="text-xl text-pink" />
+                  <h1 className="flex flex-1">X10 - {hasDiapers.name}</h1>
+                </div>
+              )}
+              <div className="flex justify-center gap gap-2 items-center m-2">
+                <HiClipboardCheck className="text-xl text-pink" />
+                <h1 className="flex flex-1">Pañitos Humedos</h1>
+              </div>
+            </div>
+            <form
+              onSubmit={onSubmit}
+              className="flex flex-col gap-3 sm:gap-5 mt-6"
+            >
               <label>Name:</label>
               <div className="flex flex-col gap gap-4">
                 <input
@@ -162,7 +239,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                   type="submit"
                   className="outline-none border border-solid border-blue1 rounded-lg p-2"
                 >
-                  Enviar
+                  Send
                 </button>
               </div>
             </form>

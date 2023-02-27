@@ -21,7 +21,10 @@ export default function Home() {
 
   const { user } = useAuth();
 
-  console.log("🚀 ~ file: index.tsx:13 ~ Home ~ getGlobalEmail", user);
+  console.log(
+    "🚀 ~ file: index.tsx:13 ~ Home ~ getGlobalEmail",
+    getGlobalEmail
+  );
 
   useEffect(() => {
     setGlobalEmail("test@gmail.com");
