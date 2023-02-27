@@ -147,8 +147,43 @@ const UserDashboard = () => {
     setEditedValue(dbGift[giftKey]);
   };
 
+  const HandleDiapersDb = async () => {
+    const diapers = {
+      etapa_1: {
+        id: "etapa_1",
+        name: "Pañales Etapa #1",
+        quantity: 3,
+      },
+      etapa_2: {
+        id: "etapa_2",
+        name: "Pañales Etapa #2",
+        quantity: 10,
+      },
+      etapa_3: {
+        id: "etapa_3",
+        name: "Pañales Etapa #3",
+        quantity: 40,
+      },
+    };
+
+    const docRef = doc(db, "Users", user?.uid);
+    await setDoc(
+      docRef,
+      {
+        diapers,
+      },
+      { merge: true }
+    );
+  };
+
   return (
     <div className="w-full max-w-[65ch] mx-auto ">
+      <button
+        className="w-fit px-4 sm:px-6 py-2 sm:py-3 bg-pink text-slate-900 font-medium text-base duration-300 hover:opacity-60"
+        onClick={() => HandleDiapersDb()}
+      >
+        Reset Diapers and Wipes
+      </button>
       <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-5">
         <h1>Url to gift selection</h1>
         <span className="text-red-500">
