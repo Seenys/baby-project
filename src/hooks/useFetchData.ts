@@ -25,9 +25,7 @@ const useFetchData = (uid?: string | string[]) => {
             {
                 setLoading(true);
                 const docRef = doc(db, "Users", userId);
-                console.log(docRef)
                 const docSnap = await getDoc(docRef);
-                console.log(docSnap)
                 if (!docSnap.exists()) return;
                 setDbGift(docSnap.data().GiftList);
                 setDbConfirmed(docSnap.data().selectedGifts);

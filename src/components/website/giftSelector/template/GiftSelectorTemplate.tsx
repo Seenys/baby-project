@@ -7,7 +7,7 @@ import { useGiftStore, setIsSelected } from "@/stores/giftStore";
 // Types
 import { Gift, Gifts } from "@/types/firebase";
 // Icons
-import { BsBookmarkCheck } from "react-icons/bs";
+import { BsBookmarkCheck, BsFillBookmarkHeartFill } from "react-icons/bs";
 import { FcCheckmark } from "react-icons/fc";
 import { HiClipboardCheck } from "react-icons/hi";
 // functions
@@ -173,7 +173,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
     <>
       <div className="flex-1 flex flex-col h-screen  items-center text-xs sm:text-sm">
         <div className="flex lg:flex-row items-center flex-col-reverse w-full h-full">
-          <div className="lg:w-3/5 grid grid-cols-3 gap gap-4 w-auto h-fit items-center">
+          <div className="lg:w-3/5 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap gap-4 w-auto h-fit items-center">
             {!loading &&
               Object.keys(giftArray).map((gift) => {
                 const {
@@ -200,8 +200,18 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                 ) : null;
               })}
           </div>
-          <div className="lg:w-2/5 w-auto outline-none  self-start">
-            <div className="border border-solid border-blue1 m-4 p-4">
+          <div className="lg:w-2/5 w-full outline-none lg:sticky lg:top-24  self-start">
+            <div className="flex lg:flex-row flex-col items-center justify-center w-auto border border-solid border-blue1 m-4 p-4">
+              <div className=" w-auto flex items-center justify-center">
+                <BsFillBookmarkHeartFill className="text-7xl text-red-400 self-start justify-center" />
+              </div>
+              <h1 className="text-center font-extrabold text-xl">
+                Encontramos en internet, unas opciones de regalo que puedes
+                elegir. <br />
+                ¡¡ No Olvides los pañales ‼
+              </h1>
+            </div>
+            <div className="border w-auto border-solid border-blue1 m-4 p-4">
               <h1 className="text-2xl">Gifts</h1>
               <div className="flex flex-col  sm:gap-5">
                 {Object.keys(giftArray).map((item) => {
@@ -260,7 +270,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
             </div>
             <div className="border border-solid border-blue1 m-4 p-4">
               <h1 className="text-2xl m-4">colors</h1>
-              <div className="flex flex-row  sm:gap-5  gap gap-4 item-center justify-center">
+              <div className="flex flex-row  sm:gap-5   gap gap-4 item-center justify-center">
                 <div className={`w-16 h-16 rounded-lg bg-color0`}></div>
                 <div className={`w-16 h-16 rounded-lg bg-color1`}></div>
                 <div className={`w-16 h-16 rounded-lg bg-color2`}></div>
@@ -269,6 +279,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                 <div className={`w-16 h-16 rounded-lg bg-color5`}></div>
                 <div className={`w-16 h-16 rounded-lg bg-color6`}></div>
                 <div className={`w-16 h-16 rounded-lg bg-color7`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-pink`}></div>
               </div>
             </div>
           </div>
