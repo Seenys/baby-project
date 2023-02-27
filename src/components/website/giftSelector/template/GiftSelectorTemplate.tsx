@@ -11,7 +11,7 @@ import { BsBookmarkCheck } from "react-icons/bs";
 import { FcCheckmark } from "react-icons/fc";
 import { HiClipboardCheck } from "react-icons/hi";
 // functions
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { Toast } from "@/alerts/toast";
 import { db } from "@/firebase";
 //others
@@ -37,14 +37,26 @@ interface dbDiapers {
   [key: string]: Diapers;
 }
 
+const colors = [
+  "#34d399",
+  "#3b82f6",
+  "#22d3ee",
+  "#67e8f9",
+  "#2dd4bf",
+  "#B9F3E4",
+  "#7FE9DE",
+];
+
 const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
   const { dbDiapers, dbGift, loading, error } = useFetchData(uid);
+
   const [giftArray, setGiftArray] = useState<Gifts>({});
   const [hasDiapers, setHasDiapers] = useState<Diapers>({
     name: "",
     quantity: 0,
     id: "",
   });
+
   const isSelected = useGiftStore(setIsSelected);
   const {
     register,
@@ -188,61 +200,77 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                 ) : null;
               })}
           </div>
-          <div className="lg:w-2/5 w-auto outline-none border border-solid border-blue1 m-4 p-4 sticky top-1/4 self-start">
-            <h1 className="text-2xl">Gifts</h1>
-            <div className="flex flex-col  sm:gap-5">
-              {Object.keys(giftArray).map((item) => {
-                const { gift: giftName, selected } = giftArray[item];
-                return (
-                  selected && (
-                    <div
-                      key={item}
-                      className="flex justify-center gap gap-2 items-center m-2"
-                    >
-                      <FcCheckmark className="text-xl text-green-400" />
-                      <h1 className="flex flex-1">{giftName}</h1>
-                    </div>
-                  )
-                );
-              })}
-            </div>
-            <h1 className="text-2xl">Diapers</h1>
-            <div className="flex flex-col  sm:gap-5">
-              {hasDiapers && (
+          <div className="lg:w-2/5 w-auto outline-none  self-start">
+            <div className="border border-solid border-blue1 m-4 p-4">
+              <h1 className="text-2xl">Gifts</h1>
+              <div className="flex flex-col  sm:gap-5">
+                {Object.keys(giftArray).map((item) => {
+                  const { gift: giftName, selected } = giftArray[item];
+                  return (
+                    selected && (
+                      <div
+                        key={item}
+                        className="flex justify-center gap gap-2 items-center m-2"
+                      >
+                        <FcCheckmark className="text-xl text-green-400" />
+                        <h1 className="flex flex-1">{giftName}</h1>
+                      </div>
+                    )
+                  );
+                })}
+              </div>
+              <h1 className="text-2xl">Diapers</h1>
+              <div className="flex flex-col  sm:gap-5">
+                {hasDiapers && (
+                  <div className="flex justify-center gap gap-2 items-center m-2">
+                    <HiClipboardCheck className="text-xl text-pink" />
+                    <h1 className="flex flex-1">X10 - {hasDiapers.name}</h1>
+                  </div>
+                )}
                 <div className="flex justify-center gap gap-2 items-center m-2">
                   <HiClipboardCheck className="text-xl text-pink" />
-                  <h1 className="flex flex-1">X10 - {hasDiapers.name}</h1>
+                  <h1 className="flex flex-1">Pañitos Humedos</h1>
                 </div>
-              )}
-              <div className="flex justify-center gap gap-2 items-center m-2">
-                <HiClipboardCheck className="text-xl text-pink" />
-                <h1 className="flex flex-1">Pañitos Humedos</h1>
+              </div>
+
+              <form
+                onSubmit={onSubmit}
+                className="flex flex-col gap-3 sm:gap-5 mt-6 "
+              >
+                <label>Name:</label>
+                <div className="flex flex-col gap gap-4 ">
+                  <input
+                    {...register("Name")}
+                    type="text"
+                    required
+                    placeholder="Please enter your name"
+                    className="flex-1 outline-none border border-solid border-blue1 rounded-lg p-2 text-slate-900"
+                  />
+                  <span className="text-red-500 text-sm">
+                    {errors.Name?.message}
+                  </span>
+                  <button
+                    type="submit"
+                    className="outline-none border border-solid border-blue1 rounded-lg p-2"
+                  >
+                    Send
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div className="border border-solid border-blue1 m-4 p-4">
+              <h1 className="text-2xl m-4">colors</h1>
+              <div className="flex flex-row  sm:gap-5  gap gap-4 item-center justify-center">
+                <div className={`w-16 h-16 rounded-lg bg-color0`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color1`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color2`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color3`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color4`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color5`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color6`}></div>
+                <div className={`w-16 h-16 rounded-lg bg-color7`}></div>
               </div>
             </div>
-            <form
-              onSubmit={onSubmit}
-              className="flex flex-col gap-3 sm:gap-5 mt-6"
-            >
-              <label>Name:</label>
-              <div className="flex flex-col gap gap-4">
-                <input
-                  {...register("Name")}
-                  type="text"
-                  required
-                  placeholder="Please enter your name"
-                  className="flex-1 outline-none border border-solid border-blue1 rounded-lg p-2 text-slate-900"
-                />
-                <span className="text-red-500 text-sm">
-                  {errors.Name?.message}
-                </span>
-                <button
-                  type="submit"
-                  className="outline-none border border-solid border-blue1 rounded-lg p-2"
-                >
-                  Send
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       </div>
