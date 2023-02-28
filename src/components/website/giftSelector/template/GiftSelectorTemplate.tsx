@@ -212,7 +212,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
               </h1>
             </div>
             <div className="border w-auto border-solid border-blue1 m-4 p-4">
-              <h1 className="text-2xl">Gifts</h1>
+              <h1 className="text-2xl">Regalos</h1>
               <div className="flex flex-col  sm:gap-5">
                 {Object.keys(giftArray).map((item) => {
                   const { gift: giftName, selected } = giftArray[item];
@@ -229,7 +229,7 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                   );
                 })}
               </div>
-              <h1 className="text-2xl">Diapers</h1>
+              <h1 className="text-2xl">Pañales</h1>
               <div className="flex flex-col  sm:gap-5">
                 {hasDiapers && (
                   <div className="flex justify-center gap gap-2 items-center m-2">
@@ -247,13 +247,13 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                 onSubmit={onSubmit}
                 className="flex flex-col gap-3 sm:gap-5 mt-6 "
               >
-                <label>Name:</label>
+                <label>Nombre:</label>
                 <div className="flex flex-col gap gap-4 ">
                   <input
                     {...register("Name")}
                     type="text"
                     required
-                    placeholder="Please enter your name"
+                    placeholder="Ingrese su nombre completo"
                     className="flex-1 outline-none border border-solid border-blue1 rounded-lg p-2 text-slate-900"
                   />
                   <span className="text-red-500 text-sm">
@@ -263,13 +263,13 @@ const GiftSelectorTemplate: FC<Props> = ({ uid }) => {
                     type="submit"
                     className="outline-none border border-solid border-blue1 rounded-lg p-2"
                   >
-                    Send
+                    Enviar
                   </button>
                 </div>
               </form>
             </div>
             <div className="border border-solid border-blue1 m-4 p-4">
-              <h1 className="text-2xl m-4">colors</h1>
+              <h1 className="text-2xl m-4">Paleta de colores</h1>
               <div className="flex flex-row  sm:gap-5   gap gap-4 item-center justify-center">
                 <div className={`w-16 h-16 rounded-lg bg-color0`}></div>
                 <div className={`w-16 h-16 rounded-lg bg-color1`}></div>
