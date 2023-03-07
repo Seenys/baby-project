@@ -16,7 +16,7 @@ const ConfirmedGifts = () => {
   return loading ? (
     <div>loading</div>
   ) : (
-    <div className="h-screen">
+    <div>
       <h1 className=" text-lg text-center">Confirmed Gifts</h1>
       {stateGifts &&
         Object.keys(stateGifts).map((gift: any) => {
